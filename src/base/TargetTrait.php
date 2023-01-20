@@ -8,6 +8,7 @@
 namespace index0h\log\base;
 
 use yii\helpers\ArrayHelper;
+use yii\helpers\VarDumper;
 use yii\log\Logger;
 
 /**
@@ -120,8 +121,12 @@ trait TargetTrait
                 return ['@message' => $text];
             case 'object':
                 $vars = get_object_vars($text);
-                if ($text instanceof \Exception) {
+                if ($text instanceof \Exception || $text instanceof \Error) {
                     $vars['@message'] = $text->getMessage();
+                    $vars['@trace'] = $text->getTraceAsString();
+                } else {
+                    $vars['@message'] = get_class($text);
+                    $vars['@trace'] = VarDumper::dumpAsString($text);
                 }
 
                 return $vars;
