@@ -88,16 +88,10 @@ trait TargetTrait
      */
     protected function getContextMessage()
     {
-        $context = $this->context;
-
-        if (($this->logUser === true) && ($user = \Yii::$app->get('user', false)) !== null) {
-            /** @var \yii\web\User $user */
-            $context['userId'] = $user->getId();
-        }
-
-        foreach ($this->logVars as $name) {
-            if (empty($GLOBALS[$name]) === false) {
-                $context[$name] = & $GLOBALS[$name];
+        $context = ArrayHelper::filter($GLOBALS, $this->logVars);
+        foreach ($this->maskVars as $var) {
+            if (ArrayHelper::getValue($context, $var) !== null) {
+                ArrayHelper::setValue($context, $var, '***');
             }
         }
 
