@@ -119,7 +119,12 @@ trait TargetTrait
             case 'string':
                 return ['@message' => $text];
             case 'object':
-                return get_object_vars($text);
+                $vars = get_object_vars($text);
+                if ($text instanceof \Exception) {
+                    $vars['@message'] = $text->getMessage();
+                }
+
+                return $vars;
             default:
                 return ['@message' => \Yii::t('log', "Warning, wrong log message type '{$type}'")];
         }
